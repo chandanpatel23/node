@@ -3,6 +3,8 @@ var express = require('express');
 var morgan = require('morgan');
 //console.log(catMe());
 var app = express();  
+const dbConnection = require('./config/db');
+const userModel = require('./models/user');
 
 app.use(morgan('dev'));
 
@@ -25,6 +27,30 @@ app.get('/greet', function (req, res) {
 app.get('/about', function (req, res) {
   res.send("About page!");
 });
+
+app.get('/register', (req, res) => {
+  res.render("register");
+});
+
+app.post('/register', async (req, res) => {
+  //console.log(req.body);
+  const {username, email, password} = req.body;
+
+  const newUser = await userModel.create({
+    username: username,
+    email: email,
+    password: password
+});
+  res.send(newUser);
+});
+
+  app.get('/get-users', (req, res)=> {
+     userModel.find({
+      username: 'chandan'
+     }).then((users)=> {
+        res.send(users);
+     })
+  })
 
 app.post('/get-form-data',  (req, res) => {
   //console.log(req.query);
